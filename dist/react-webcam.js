@@ -948,6 +948,14 @@ var Webcam = function (_Component) {
       }
     }
   }, {
+    key: 'componentWillUpdate',
+    value: function componentWillUpdate(nextProps, nextState) {
+      // eslint-disable-line no-unused-vars
+      if (nextProps.videoSource !== this.props.videoSource || nextProps.audioSource !== this.props.audioSource) {
+        this.requestUserMedia();
+      }
+    }
+  }, {
     key: 'componentWillUnmount',
     value: function componentWillUnmount() {
       var index = Webcam.mountedInstances.indexOf(this);
@@ -1044,12 +1052,19 @@ var Webcam = function (_Component) {
           var videoSource = null;
 
           devices.forEach(function (device) {
-            if (device.kind === 'audio') {
+            if (device.kind === 'audioinput') {
               audioSource = device.id;
-            } else if (device.kind === 'video') {
+            } else if (device.kind === 'videoinput') {
               videoSource = device.id;
             }
           });
+
+          if (_this2.props.audioSource) {
+            audioSource = _this2.props.audioSource;
+          }
+          if (_this2.props.videoSource) {
+            videoSource = _this2.props.videoSource;
+          }
 
           sourceSelected(audioSource, videoSource);
         }).catch(function (error) {
@@ -1067,6 +1082,13 @@ var Webcam = function (_Component) {
               videoSource = source.id;
             }
           });
+
+          if (_this2.props.audioSource) {
+            audioSource = _this2.props.audioSource;
+          }
+          if (_this2.props.videoSource) {
+            videoSource = _this2.props.videoSource;
+          }
 
           sourceSelected(audioSource, videoSource);
         });
@@ -1112,7 +1134,7 @@ var Webcam = function (_Component) {
         width: this.props.width,
         height: this.props.height,
         src: this.state.src,
-        muted: this.props.muted,
+        muted: this.props.audio,
         className: this.props.className,
         style: this.props.style,
         ref: function ref(_ref) {
@@ -1129,14 +1151,12 @@ Webcam.defaultProps = {
   audio: true,
   className: '',
   height: 480,
-  muted: false,
   onUserMedia: function onUserMedia() {},
   screenshotFormat: 'image/webp',
   width: 640
 };
 Webcam.propTypes = {
   audio: _propTypes2.default.bool,
-  muted: _propTypes2.default.bool,
   onUserMedia: _propTypes2.default.func,
   height: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
   width: _propTypes2.default.oneOfType([_propTypes2.default.number, _propTypes2.default.string]),
